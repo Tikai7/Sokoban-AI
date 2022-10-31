@@ -6,7 +6,7 @@ from Noeud import Node
 class Search:
 
     @staticmethod
-    def DFS(init_node: Node):
+    def DFS(init_node: Node, max_depth):
         OPEN = []
         CLOSED = []
 
@@ -15,7 +15,7 @@ class Search:
         else:
             step = 0
             OPEN.append(init_node)
-            while True:
+            while True and max_depth <= init_node.depth:
                 step += 1
                 if len(OPEN) <= 0:
                     return None, -1
@@ -74,7 +74,7 @@ class Search:
     @staticmethod
     def AlgoTypeA(init_node: Node, heuristic=1):
 
-        OPEN = []
+        OPEN = deque()
         CLOSED = []
         step = 0
         # ---- si le noeud courant est l'objectif on s'arrete
@@ -92,52 +92,46 @@ class Search:
                 else:
 
                     # ---- on prend de OPEN le noeud ayant l'heuristique la + basse
-                    min_node = OPEN[0]
-                    for element in OPEN:
-                        if element.costH < min_node.costH:
-                            min_node = element
-
-                    current_node = min_node
+                    OPEN = deque(
+                        sorted(list(OPEN), key=lambda noeud: noeud.costH))
+                    current_node = OPEN.popleft()
 
                     # ----- des que c'est fait on l'enleve de open et l'ajoute dans CLOSED
-                    OPEN.remove(current_node)
                     CLOSED.append(current_node)
 
                     # ----- on clacule ses successeurs
                     succ = current_node.successeurs()
+                    # --- si c'est l'objectif on le retourne
+                    if current_node.state.is_goal():
+                        return current_node, step
 
                     while len(succ) != 0:
 
-                        # ----- tant qu'il en a , on prend un fils et on clacule son heuristique
+                        # ----- tant qu'il en a , on prend un fils et on calcule son heuristique
                         child = succ.popleft()
-                        child.cost_node(heuristic)
-                        # --- si c'est l'objectif on le retourne
-                        if child.state.is_goal():
-                            return child, step
 
-                        # --- sinon on l'ajoute dans OPEN si il y'ai pas
+                        if not child.state.is_deadlock():
+                            child.cost_node(heuristic)
 
-                        if child.state.board_d not in [n.state.board_d for n in OPEN] and \
-                                child.state.board_d not in [n.state.board_d for n in CLOSED]:
-                            OPEN.append(child)
+                            # --- sinon on l'ajoute dans OPEN si il y'ai pas
 
-                        # --- si il est dans OPEN ou CLOSED et minimum on update
-                        elif child.state.board_d in [n.state.board_d for n in OPEN]:
-                            old_child = None
-                            for element in OPEN:
-                                if element.state.board_d == child.state.board_d:
-                                    old_child = element
-
-                            if child.costH < old_child.costH:
-                                OPEN.remove(old_child)
+                            if child.state.board_d not in [n.state.board_d for n in OPEN] and \
+                                    child.state.board_d not in [n.state.board_d for n in CLOSED]:
                                 OPEN.append(child)
 
-                        elif child.state.board_d in [n.state.board_d for n in CLOSED]:
-                            old_child = None
-                            for element in CLOSED:
-                                if element.state.board_d == child.state.board_d:
-                                    old_child = element
+                            # --- si il est dans OPEN ou CLOSED et minimum on update
+                            elif child.state.board_d in [n.state.board_d for n in OPEN]:
+                                index = [n.state.board_d for n in OPEN].index(
+                                    child.state.board_d)
 
-                            if child.costH < old_child.costH:
-                                CLOSED.remove(old_child)
-                                CLOSED.append(child)
+                                if child.costH < OPEN[index].costH:
+                                    OPEN.remove(OPEN[index])
+                                    OPEN.append(child)
+
+                            elif child.state.board_d in [n.state.board_d for n in CLOSED]:
+                                index = [n.state.board_d for n in CLOSED].index(
+                                    child.state.board_d)
+
+                                if child.costH < CLOSED[index].costH:
+                                    CLOSED.remove(CLOSED[index])
+                                    OPEN.append(child)

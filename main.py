@@ -23,21 +23,12 @@ CASES = {
     " ":   "./assets/Ground/ground_06.png",
     "S":   "./assets/Ground/ground_03.png",
     "B":   "./assets/Crates/crate_02.png",
-    "*":   "./assets/Crates/crate_04.png"
+    "*":   "./assets/Crates/crate_04.png",
+    "D":    "./assets/Environment/environment_05.png"
 }
 
 
-def render_static(surface, board_s):
-    for row_index, row in enumerate(board_s):
-        for col_index, column in enumerate(row):
-            position_x = col_index*64
-            position_y = row_index*64
-            asset = pygame.image.load(
-                CASES[column]).convert_alpha()
-            surface.blit(asset, (position_x, position_y))
-
-
-def render_dynamic(surface, board_d, board_s, orientation):
+def render_dynamic(surface, board_d, board_s, board_dead, orientation):
     legale_moves = {"B", "*"}
     for row_index, row in enumerate(board_d):
         for col_index, column in enumerate(row):
@@ -48,7 +39,10 @@ def render_dynamic(surface, board_d, board_s, orientation):
                 CASES[board_s[row_index][col_index]]).convert_alpha()
             surface.blit(asset, (position_x, position_y))
 
-            if column == "R":
+            if board_dead[row_index][col_index] == "D":
+                asset = pygame.image.load(CASES["D"]).convert_alpha()
+                surface.blit(asset, (position_x, position_y))
+            elif column == "R":
                 asset = pygame.image.load(orientation).convert_alpha()
                 surface.blit(asset, (position_x, position_y))
             elif column == "B" and board_s[row_index][col_index] == "S":
@@ -123,6 +117,48 @@ board5 = [['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
           ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O']]
 
 
+board6 = [
+    ['O', 'O', 'O', 'O', 'O', 'O', 'O'],
+    ['O', 'S', ' ', 'O', ' ', 'R', 'O'],
+    ['O', ' ', ' ', 'O', 'B', ' ', 'O'],
+    ['O', 'S', ' ', ' ', 'B', ' ', 'O'],
+    ['O', ' ', ' ', 'O', 'B', ' ', 'O'],
+    ['O', 'S', ' ', 'O', ' ', ' ', 'O'],
+    ['O', 'O', 'O', 'O', 'O', 'O', 'O'],
+]
+
+
+board7 = [
+    ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+    ['O', 'S', 'S', 'S', ' ', 'O', 'O', 'O'],
+    ['O', ' ', 'S', ' ', 'B', ' ', ' ', 'O'],
+    ['O', ' ', ' ', 'B', 'B', 'B', ' ', 'O'],
+    ['O', 'O', 'O', 'O', ' ', ' ', 'R', 'O'],
+    ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+]
+
+board8 = [
+    ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+    ['O', ' ', ' ', ' ', ' ', 'O', 'O', 'O'],
+    ['O', ' ', ' ', ' ', 'B', ' ', ' ', 'O'],
+    ['O', 'S', 'S', 'S', '*', 'B', 'R', 'O'],
+    ['O', ' ', ' ', ' ', 'B', ' ', ' ', 'O'],
+    ['O', ' ', ' ', ' ', 'O', 'O', 'O', 'O'],
+    ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+]
+
+board9 = [
+    ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+    ['O', 'O', 'O', 'S', ' ', 'O', 'O', 'O', 'O'],
+    ['O', 'O', ' ', ' ', ' ', 'O', 'O', 'O', 'O'],
+    ['O', 'S', ' ', 'S', ' ', 'O', 'O', 'O', 'O'],
+    ['O', ' ', 'B', ' ', 'B', 'B', ' ', ' ', 'O'],
+    ['O', 'O', 'O', 'S', ' ', ' ', 'B', 'R', 'O'],
+    ['O', 'O', 'O', ' ', ' ', 'O', 'O', 'O', 'O'],
+    ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
+]
+
+
 Launch = True
 Menu = True
 MenuAlgo = False
@@ -133,8 +169,8 @@ AI = False
 FIRSTIME = True
 
 
-WIDTH = len(board[0])*64
-HEIGHT = len(board)*64
+WIDTH = (len(board[0])+4)*64
+HEIGHT = (len(board)+4)*64
 
 surface = pygame.display.set_mode((WIDTH, HEIGHT))  # pygame.RESIZABLE
 surface.fill((155, 155, 155))
@@ -227,8 +263,11 @@ while Launch:
 
         if FIRSTIME:
             boards = [board1, board2, board3, board4, board5]
+            boards_new = [board6, board7, board8, board9]
+            boards_used = boards
+
             FIRSTIME = False
-            Game = Etat.SokoPuzzle(boards[k])
+            Game = Etat.SokoPuzzle(boards_used[k])
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -250,13 +289,15 @@ while Launch:
                     orientation = IMAGES["D"]
 
         if Game.is_goal():
+
             FIRSTIME = True
             k += 1
             surface.fill((155, 155, 155))
             pygame.display.flip()
-            Game = Etat.SokoPuzzle(boards[k])
+            Game = Etat.SokoPuzzle(boards_used[k])
 
-        render_dynamic(surface, Game.board_d, Game.board_s, orientation)
+        render_dynamic(surface, Game.board_d, Game.board_s,
+                       Game.board_dead, orientation)
         pygame.display.flip()
 
     while AI:
@@ -267,8 +308,12 @@ while Launch:
 
         if FIRSTIME:
             boards = [board1, board2, board3, board4, board5]
+            boards_new = [board6, board7, board8, board9]
+
+            boards_used = boards
+
             FIRSTIME = False
-            Game = Etat.SokoPuzzle(boards[k])
+            Game = Etat.SokoPuzzle(boards_used[k])
             init_node = Noeud.Node(Game)
 
             deb = time.time()
@@ -301,10 +346,11 @@ while Launch:
             k += 1
             surface.fill((155, 155, 155))
             pygame.display.flip()
-            Game = Etat.SokoPuzzle(boards[k])
+            Game = Etat.SokoPuzzle(boards_used[k])
 
         # ------------------------ RENDY PYGAME DE LA MAP DYNAMIQUE
-        render_dynamic(surface, Game.board_d, Game.board_s, orientation)
+        render_dynamic(surface, Game.board_d, Game.board_s,
+                       Game.board_dead, orientation)
         surface.blit(text_render, (0, 0))
         pygame.display.flip()
         time.sleep(0.2)
