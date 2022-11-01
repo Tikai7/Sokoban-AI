@@ -42,7 +42,8 @@ def render_dynamic(surface, board_d, board_s, board_dead, orientation):
             if board_dead[row_index][col_index] == "D":
                 asset = pygame.image.load(CASES["D"]).convert_alpha()
                 surface.blit(asset, (position_x, position_y))
-            elif column == "R":
+
+            if column == "R":
                 asset = pygame.image.load(orientation).convert_alpha()
                 surface.blit(asset, (position_x, position_y))
             elif column == "B" and board_s[row_index][col_index] == "S":
@@ -150,7 +151,7 @@ board8 = [
 board9 = [
     ['O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'],
     ['O', 'O', 'O', 'S', ' ', 'O', 'O', 'O', 'O'],
-    ['O', 'O', ' ', ' ', ' ', 'O', 'O', 'O', 'O'],
+    ['O', 'O', 'O', ' ', ' ', 'O', 'O', 'O', 'O'],
     ['O', 'S', ' ', 'S', ' ', 'O', 'O', 'O', 'O'],
     ['O', ' ', 'B', ' ', 'B', 'B', ' ', ' ', 'O'],
     ['O', 'O', 'O', 'S', ' ', ' ', 'B', 'R', 'O'],
@@ -169,8 +170,8 @@ AI = False
 FIRSTIME = True
 
 
-WIDTH = (len(board[0])+4)*64
-HEIGHT = (len(board)+4)*64
+WIDTH = (len(board[0])+1)*64
+HEIGHT = (len(board)+1)*64
 
 surface = pygame.display.set_mode((WIDTH, HEIGHT))  # pygame.RESIZABLE
 surface.fill((155, 155, 155))
@@ -262,9 +263,10 @@ while Launch:
     while Player:
 
         if FIRSTIME:
-            boards = [board1, board2, board3, board4, board5]
-            boards_new = [board6, board7, board8, board9]
+            boards = [board4, board2, board3, board4, board5]
+            boards_new = [board6, board7, board8, board9, board]
             boards_used = boards
+            boards_used.extend(boards_new)
 
             FIRSTIME = False
             Game = Etat.SokoPuzzle(boards_used[k])
@@ -308,9 +310,9 @@ while Launch:
 
         if FIRSTIME:
             boards = [board1, board2, board3, board4, board5]
-            boards_new = [board6, board7, board8, board9]
+            boards_new = [board6, board7, board8, board9, board]
 
-            boards_used = boards
+            boards_used = boards_new
 
             FIRSTIME = False
             Game = Etat.SokoPuzzle(boards_used[k])

@@ -18,7 +18,7 @@
     - To solve the game, we use 
 
     - BFS algorithm
-    - Algorithm A*
+    - Algorithm A* (with deadlock detection)
     - DFS algorithm (not usable by the menu)
 
 # Note 

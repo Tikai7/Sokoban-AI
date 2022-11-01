@@ -114,16 +114,21 @@ class SokoPuzzle:
         bottom_line = True
 
         corners_dead_locks = np.array(board_dead)
-        u_cant_add = True
         dx, dy = np.where(corners_dead_locks == "D")
+        new_dx = dx[1:]
+        new_dy = dy[1:]
 
         for indice_x, indice_y in zip(dx, dy):
-            for indice_i, indice_j in zip(dx[1:], dy[1:]):
+            for indice_i, indice_j in zip(new_dx, new_dy):
+                if indice_i == indice_x and indice_j != indice_y:
 
-                if indice_i == indice_x:
                     counter = indice_y
+                    counter_deb = indice_j
+
                     if indice_j > indice_y:
                         counter = indice_j
+                        counter_deb = indice_y
+
                     for col in range(counter):
                         if self.board_s[indice_x][col] not in dont_verif:
                             if self.board_s[indice_x+1][col] != "O":
@@ -131,20 +136,22 @@ class SokoPuzzle:
                             if self.board_s[indice_x-1][col] != "O":
                                 top_line = False
 
+                    i_can_add = True
                     if bottom_line or top_line:
-                        for j in range(counter):
+                        for j in range(counter_deb, counter):
                             if self.board_s[indice_x][j] in dont_verif:
-                                u_cant_add = False
+                                i_can_add = False
 
-                        for j in range(counter):
-                            if u_cant_add and self.board_s[indice_x][j] != "S":
+                        for j in range(counter_deb, counter):
+                            if i_can_add and self.board_s[indice_x][j] not in dont_verif:
                                 board_dead[indice_x][j] = "D"
-                    u_cant_add = True
 
-                if indice_j == indice_y:
+                if indice_j == indice_y and indice_i != indice_x:
                     counter = indice_x
+                    counter_deb = indice_i
                     if indice_i > indice_x:
                         counter = indice_i
+                        counter_deb = indice_x
 
                     for row in range(counter):
                         if self.board_s[row][indice_y] not in dont_verif:
@@ -153,16 +160,16 @@ class SokoPuzzle:
                             if self.board_s[row][indice_y-1] != "O":
                                 left_line = False
 
+                    i_can_add = True
+
                     if left_line or right_line:
-                        for i in range(counter):
+                        for i in range(counter_deb, counter):
                             if self.board_s[i][indice_y] in dont_verif:
-                                u_cant_add = False
+                                i_can_add = False
 
-                        for i in range(counter):
-                            if u_cant_add and self.board_s[i][indice_y] != "S":
+                        for i in range(counter_deb, counter):
+                            if i_can_add and self.board_s[i][indice_y] not in dont_verif:
                                 board_dead[i][indice_y] = "D"
-
-                    u_cant_add = True
 
             left_line = True
             right_line = True
