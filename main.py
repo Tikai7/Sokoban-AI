@@ -263,10 +263,13 @@ while Launch:
     while Player:
 
         if FIRSTIME:
-            boards = [board4, board2, board3, board4, board5]
+            boards = [board1, board2, board3, board4, board5]
             boards_new = [board6, board7, board8, board9, board]
-            boards_used = boards
-            boards_used.extend(boards_new)
+
+            all_boards = boards
+            all_boards.extend(boards_new)
+
+            boards_used = all_boards
 
             FIRSTIME = False
             Game = Etat.SokoPuzzle(boards_used[k])
@@ -312,7 +315,10 @@ while Launch:
             boards = [board1, board2, board3, board4, board5]
             boards_new = [board6, board7, board8, board9, board]
 
-            boards_used = boards_new
+            all_boards = boards
+            all_boards.extend(boards_new)
+
+            boards_used = all_boards
 
             FIRSTIME = False
             Game = Etat.SokoPuzzle(boards_used[k])

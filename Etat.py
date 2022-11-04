@@ -53,7 +53,7 @@ class SokoPuzzle:
                     self.board_d[i][j] = "B"
 
         self.board_dead = self.create_deadlock()
-        self.show_deadlock_map()
+        # self.show_deadlock_map()
 
     # ------ Fonction calculant la nouvelle pos du joueur dans la map
 
