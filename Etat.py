@@ -129,8 +129,8 @@ class SokoPuzzle:
                         counter = indice_j
                         counter_deb = indice_y
 
-                    for col in range(counter):
-                        if self.board_s[indice_x][col] not in dont_verif:
+                    for col in range(counter_deb, counter):
+                        if self.board_s[indice_x][col] != "S":
                             if self.board_s[indice_x+1][col] != "O":
                                 bottom_line = False
                             if self.board_s[indice_x-1][col] != "O":
@@ -147,14 +147,14 @@ class SokoPuzzle:
                                 board_dead[indice_x][j] = "D"
 
                 if indice_j == indice_y and indice_i != indice_x:
+
                     counter = indice_x
                     counter_deb = indice_i
                     if indice_i > indice_x:
                         counter = indice_i
                         counter_deb = indice_x
-
-                    for row in range(counter):
-                        if self.board_s[row][indice_y] not in dont_verif:
+                    for row in range(counter_deb, counter):
+                        if self.board_s[row][indice_y] != "S":
                             if self.board_s[row][indice_y+1] != "O":
                                 right_line = False
                             if self.board_s[row][indice_y-1] != "O":
