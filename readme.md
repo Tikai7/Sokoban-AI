@@ -27,10 +27,7 @@
     - The best algorithm is A* with the 3rd heuristic.
 
 # Image
- - BFS
 ![BFS_Without_dead_lock](https://user-images.githubusercontent.com/68500496/201464689-6081b6f6-8ed0-45df-b6b9-1dc0c890b879.JPG)
-
- - A* with deadlocks
 ![A_start_dead_lock_result](https://user-images.githubusercontent.com/68500496/201464693-538cfe59-cbaa-4fba-ae1e-edada69052db.JPG)
 
 
