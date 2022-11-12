@@ -26,6 +26,12 @@
         for each map and the number of steps the algorithm takes to reach the solution.
     - The best algorithm is A* with the 3rd heuristic.
 
+# Image
+
+![BFS_Without_dead_lock](https://user-images.githubusercontent.com/68500496/201464689-6081b6f6-8ed0-45df-b6b9-1dc0c890b879.JPG)
+![A_start_dead_lock_result](https://user-images.githubusercontent.com/68500496/201464693-538cfe59-cbaa-4fba-ae1e-edada69052db.JPG)
+
+
 # Result
  - BFS 
     - Board1 : 11
